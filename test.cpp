@@ -14,26 +14,34 @@ int main(){
         cin >> choice;
         switch (choice){
             case 1: 
+                system("cls");
                 cypher();
-                cout << "=================Da ma hoa=================\n";
+                cout << "======================Da ma hoa====================\n\n\n\n";
+                system("pause");
                 menu();
                 choice = 0;
                 break;
             case 2:
+                system("cls");
                 plain();
-                cout << "\n=================Giai ma thanh cong==============\n";
+                cout << "\n=========================ok=====================\n\n\n\n";
+                system("pause");
                 menu();
                 choice = 0;
                 break;
             case 3:
+                system("cls");
                 MakeKey();
                 choice = 0;
-                cout << "\n==================Da thay doi key===================\n";
+                cout << "\n==================Da thay doi key=================\n\n\n\n";
+                system("pause");
                 menu();
                 break;
             case 4: 
+                system("cls");
                 InputPath();
-                cout << "\n==================Da thay doi anh===================\n";
+                cout << "\n=================Da thay doi anh==================\n\n\n\n";
+                system("pause");
                 choice = 0;
                 break;
             case 5:
@@ -69,6 +77,7 @@ void cypher(){
     if (path.size()<=1) InputPath();
     cout << "Nhap xau ki tu can ma hoa: ";
     InputStr();
+    sz = 0;
     while (sz < str.size()) {
         sz = fillBlock();
         Cipher();
@@ -113,12 +122,14 @@ void plain(){
             s = "";
         }
     }
-
+    cout << "_____Key: " << key; xd;
+    cout << "----------------Thong diep giai ma---------------\n";
     sz = 0;
     while (sz < str.size()) {
         sz = fillBlock();
         Plain();
         for (int i=0;i<16;i++) cout << out[i];
+        if64 << "\n";
         for (int i=0;i<16;i++) if64 << out[i];
     }
 }
