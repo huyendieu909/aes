@@ -10,12 +10,14 @@ int Nb = 4;
 int Nr = 10; // số vòng
 int Nk = 4; // số cọt của khóa gốc
 int sz = 0;
-char str[1024];
+// char str[1024];
+string str;
 
 void InputStr(){
     fflush(stdin);
     // fgets(str,1024,stdin);
-    gets(str);
+    // gets(str);
+    getline(cin,str);
 }
 
 void KeyNhapSan(){
@@ -115,8 +117,7 @@ void shiftRow(int nbr)
     int i, j;
     unsigned char tmp;
     /* each iteration shifts the row to the left by 1 */
-    for (i = 0; i < nbr; i++)
-    {
+    for (i = 0; i < nbr; i++){
         tmp = state[0+nbr*4];
         for (j = 0; j < 3; j++)
             state[j+nbr*4] = state[(j+1)+nbr*4];
@@ -135,8 +136,7 @@ void invShiftRow(int nbr)
     int i, j;
     unsigned char tmp;
     /* each iteration shifts the row to the right by 1 */
-    for (i = 0; i < nbr; i++)
-    {
+    for (i = 0; i < nbr; i++){
         tmp = state[3+nbr*4];
         for (j = 3; j > 0; j--)
             state[j+nbr*4] = state[(j-1)+nbr*4];
@@ -157,8 +157,7 @@ void mixColumn(unsigned char *column)
 {
     unsigned char cpy[4];
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for(i = 0; i < 4; i++){
         cpy[i] = column[i];
     }
     column[0] = galois_multiplication(cpy[0],2) ^
@@ -185,22 +184,16 @@ void MixColumns()
 {
     int i, j;
     unsigned char column[4];
-
     /* iterate over the 4 columns */
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++){
         /* construct one column by iterating over the 4 rows */
-        for (j = 0; j < 4; j++)
-        {
+        for (j = 0; j < 4; j++){
             column[j] = state[(j*4)+i];
         }
-
         /* apply the mixColumn on one column */
         mixColumn(column);
-
         /* put the values back into the state */
-        for (j = 0; j < 4; j++)
-        {
+        for (j = 0; j < 4; j++){
             state[(j*4)+i] = column[j];
         }
     }
@@ -210,8 +203,7 @@ void invMixColumn(unsigned char *column)
 {
     unsigned char cpy[4];
     int i;
-    for(i = 0; i < 4; i++)
-    {
+    for(i = 0; i < 4; i++){
         cpy[i] = column[i];
     }
     column[0] = galois_multiplication(cpy[0],14) ^
@@ -235,22 +227,16 @@ void invMixColumns()
 {
     int i, j;
     unsigned char column[4];
-
     /* iterate over the 4 columns */
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++){
         /* construct one column by iterating over the 4 rows */
-        for (j = 0; j < 4; j++)
-        {
+        for (j = 0; j < 4; j++){
             column[j] = state[(j*4)+i];
         }
-
         /* apply the invMixColumn on one column */
         invMixColumn(column);
-
         /* put the values back into the state */
-        for (j = 0; j < 4; j++)
-        {
+        for (j = 0; j < 4; j++){
             state[(j*4)+i] = column[j];
         }
     }
@@ -268,7 +254,6 @@ void Cipher() {
 cout << "state: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
    // Add the First round key to the state before starting the rounds.
     AddRoundKey(0); 
-	
    // There will be Nr rounds.The first Nr-1 rounds are identical.These Nr-1 rounds are executed in the loop below.
     for (round=1 ; round < Nr ; round++) {
         SubBytes();
@@ -276,12 +261,11 @@ cout << "state: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout <
         MixColumns();
         AddRoundKey(round);
     }
-	
    // The last round is given below. The MixColumns function is not here in the last round.
     SubBytes();
     ShiftRows();
     AddRoundKey(Nr);
-   
+    //out
     for (i=0 ; i < Nb ; i++) {
         for (j=0 ; j < 4 ; j++) {
 	        out[i+4*j]=state[i*4+j];
@@ -297,26 +281,21 @@ void Plain() {
 	 state[i*4+j] = in[i+4*j];
       }
    }
-
+cout << "state PL: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
    // Add the First round key to the state before starting the rounds.
    AddRoundKey(10); 
-	
-   // There will be Nr rounds.
-   // The first Nr-1 rounds are identical.
-   // These Nr-1 rounds are executed in the loop below.
+   // There will be Nr rounds. The first Nr-1 rounds are identical. These Nr-1 rounds are executed in the loop below.
    for (round=9 ; round >= 1 ; round--) {
       invShiftRows();
       invSubBytes();
       AddRoundKey(round);
       invMixColumns();
    }
-	
    // The last round is given below.
    // The MixColumns function is not here in the last round.
    invShiftRows();
    invSubBytes();
    AddRoundKey(0);
-   
    // Copy the state array to output array.
     for (i=0 ; i < Nb ; i++) {
         for (j=0 ; j < 4 ; j++) {
@@ -325,15 +304,27 @@ void Plain() {
     }
 }
 
+// int fillBlock () {
+//    int j=0;
+//    while (sz < strlen(str)) {
+//       if (j >= Nb*4) break;
+//       in[j++] = str[sz];
+//       sz++;
+//    }
+//    // Pad the block with 0s, if necessary
+//    if (sz >= strlen(str)) for ( ; j < Nb*4 ; j++) in[j] = 0;
+//    return sz;   
+// }
+
 int fillBlock () {
    int j=0;
-   while (sz < strlen(str)) {
+   while (sz < str.size()) {
       if (j >= Nb*4) break;
       in[j++] = str[sz];
       sz++;
    }
    // Pad the block with 0s, if necessary
-   if (sz >= strlen(str)) for ( ; j < Nb*4 ; j++) in[j] = 0;
+   if (sz >= str.size()) for ( ; j < Nb*4 ; j++) in[j] = 0;
    return sz;   
 }
 
@@ -344,30 +335,3 @@ void Initialize(){
     for (int i=0;i<16;i++) in.push_back(0);
     for (int i=0;i<16;i++) out.push_back(0);
 }
-
-// #define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
-
-// // MixColumns function mixes the columns of the state matrix
-// void MixColumns() {
-//    int i;
-//    unsigned char Tmp,Tm,t;
-//    for (i=0 ; i < Nb ; i++) {	
-//       t = state[0*4+i];
-//       Tmp = state[0*4+i] ^ state[1*4+i] ^ state[2*4+i] ^ state[3*4+i] ;
-//       Tm = state[0*4+i] ^ state[1*4+i] ; 
-//       Tm = xtime(Tm); 
-//       state[0*4+i] ^= Tm ^ Tmp ;
-      
-//       Tm = state[1*4+i] ^ state[2*4+i] ; 
-//       Tm = xtime(Tm); 
-//       state[1*4+i] ^= Tm ^ Tmp ;
-
-//       Tm = state[2*4+i] ^ state[3*4+i] ; 
-//       Tm = xtime(Tm); 
-//       state[2*4+i] ^= Tm ^ Tmp ;
-
-//       Tm = state[3*4+i] ^ t ; 
-//       Tm = xtime(Tm); 
-//       state[3*4+i] ^= Tm ^ Tmp ;
-//    }
-// }
