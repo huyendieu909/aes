@@ -1,63 +1,108 @@
 #include "test.h"
 #include "base64.hpp"
 using namespace base64;
-fstream f;
-fstream f64;
-fstream if64;
-void startApp();
 void cypher();
 void plain();
 void menu();
+
 int main(){
-    startApp();
+    int choice = 0;
+    Initialize();
     menu();
-    cypher();
-    plain();
+    do{
+        cout << "\n___Nhap lua chon: ";
+        cin >> choice;
+        switch (choice){
+            case 1: 
+                cypher();
+                cout << "=================Da ma hoa=================\n";
+                menu();
+                choice = 0;
+                break;
+            case 2:
+                plain();
+                cout << "\n=================Giai ma thanh cong==============\n";
+                menu();
+                choice = 0;
+                break;
+            case 3:
+                MakeKey();
+                choice = 0;
+                cout << "\n==================Da thay doi key===================\n";
+                menu();
+                break;
+            case 4: 
+                InputPath();
+                cout << "\n==================Da thay doi anh===================\n";
+                choice = 0;
+                break;
+            case 5:
+                system("cls");
+                menu();
+                choice = 0;
+                break;
+            case 6:
+                cout << "\nKet thuc chuong trinh\n";
+                f64.close();
+                system("exit");
+                break;
+        }
+    } while (choice <1 || choice > 7);
 }
+
 void menu(){
-    cout << "\n============================================\n";
-    cout <<   "|-----------------Menu---------------------|\n";
-    cout <<   "|    1. Ma hoa                             |\n";
-    cout <<   "|    2. Giai ma                            |\n";
-    cout <<   "|   Nhap lua chon:                         |\n";
+    cout << "\n=======================================================================\n";
+    cout <<   "|------------------------------Menu-----------------------------------|\n";
+    cout <<   "|            1. Ma hoa                                                |\n";
+    cout <<   "|            2. Giai ma                                               |\n";
+    cout <<   "|            3. Thay doi key                                          |\n";
+    cout <<   "|            4. Thay doi anh                                          |\n";
+    cout <<   "|            5. Xoa man hinh                                          |\n";
+    cout <<   "|            6. Ket thuc chuong trinh                                 |\n";
+    cout <<   "| Key: " << key << ""; xd; 
+    cout <<   "| Path: " << path<< ""; xd;
+    cout <<   "|---------------------------------------------------------------------|\n";
+    cout <<   "=======================================================================\n";
 }
 void cypher(){
-    InputKey();
-    KeyExpansion();
+    if (strlen(key)==0) MakeKey();
+    if (path.size()<=1) InputPath();
     cout << "Nhap xau ki tu can ma hoa: ";
     InputStr();
     while (sz < str.size()) {
         sz = fillBlock();
         Cipher();
         string s = "";
-        for (int i=0;i<16;i++) f << (int) out[i] << " ";f << "\n";
-        for (int i=0 ; i < Nb*4 ; i++) f << out[i], s+= out[i];
-        
-        
-        f << "\n";
+        for (int i=0 ; i < Nb*4 ; i++) s+= out[i];
         s = to_base64(s);
         f64 << s;
     }
+    f64 << " ";
+    f64 << str.size() << " ";
+    int a = scs(str.size());
+    f64 << a << " ";
+    int b = scs(a);
+    f64 << b;
 }
 void plain(){
-    InputKey();
-    KeyExpansion();
-    cout << "Nhap do dai xau ki tu da ma hoa: ";
-    int k;
-    cin >> k;
+    if (strlen(key)==0) MakeKey();
+    if (path.size()<=1) InputPath();
+    // dịch chuyển con trỏ file để tìm độ dài thông điệp
+    int k,a,b,pos=0;
+    f64.seekg(-1,ios::end); pos++;
+    f64>>b; b++; pos+=b;
+    f64.seekg(-pos,ios::end);
+    f64>>a; a++; pos+=a;
+    f64.seekg(-pos,ios::end);
+    f64 >> k; pos++;
+    // độ dài thông điệp đã lưu vào biến k, phép toán dưới đây sẽ tìm số khối mã aes cần giải
     int numberOfBlock = k/16;
     if (k%16!=0) numberOfBlock++;
-    f64.seekg(-(24*numberOfBlock),ios::end);
-    // f.seekg(-(16*numberOfBlock),ios::end);
-    cout << f64.tellg() << "\n";
-    // cout << f.tellg() << "\n";
     string s,ss;
+    f64.seekg(-(24*numberOfBlock)-pos,ios::end); 
+    // cout << f64.tellg() << "\n"; for debug;
     f64 >> ss;
-    // f >> ss;
     cout << ss << "\n";
-    // ss = from_base64(ss);
-
-    int pos = 0;
     s = "";
     str = "";
     for (int i=0;i<ss.size();i++){
@@ -69,45 +114,11 @@ void plain(){
         }
     }
 
-    // for (int i=0;i<16*numberOfBlock;i++) str[i] = ss[i];
     sz = 0;
     while (sz < str.size()) {
         sz = fillBlock();
         Plain();
         for (int i=0;i<16;i++) cout << out[i];
         for (int i=0;i<16;i++) if64 << out[i];
-        // cout << "\n";
     }
 }
-void startApp(){
-    Initialize();
-    // InputKey();
-    // KeyNhapSan();
-    // KeyExpansion();
-    f.open("o.ou",ios::in|ios::out|ios::app);
-    f64.open("o64.ou",ios::in|ios::out|ios::app);
-    if64.open("o.ou",ios::app);
-}
-
-// cout << "Key: ";for (int x=0;x<16;x++) cout <<hex<< (int)Key[x] << " ";cout << "\n";
-// cout << "in: "; for (int i =0;i<16;i++) cout << (int) in[i] << " "; cout << "\n";
-// for (int i=0 ; i < Nb*4 ; i++) cout << out[i] << " ";
-
-
-// for (int i = 0; i<strlen(str);i++) in[i] = str[i];
-    // cout << "in: "; for (int i =0;i<16;i++) cout << hex <<(int) in[i] << " "; cout << "\n";
-    // Cipher();
-    // cout << "out cy: ";for (int i=0 ; i < Nb*4 ; i++) cout << out[i];
-    // in = out;
-    // vector<unsigned char>out64 = out;
-    // string s;
-    // for (int i=0;i<16;i++) s+= out[i];
-    // s = to_base64(s);
-    // cout << "\nout cy2: " << s;
-    // s = from_base64(s);
-    // cout << "\nout cyb64: " << s;
-    // cout << "\nin cy: ";for (int i=0 ; i < Nb*4 ; i++) cout << hex << (int)in[i] << " ";
-    // cout << "\n";
-    // Plain();
-    // cout << "out pl: ";for (int i=0 ; i < Nb*4 ; i++) cout << out[i];
-    //system("pause");

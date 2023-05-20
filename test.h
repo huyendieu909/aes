@@ -1,44 +1,43 @@
 #include <bits/stdc++.h>
 #include "test2.h"
 using namespace std;
+#define xd cout << "\n"
 vector<int> state; // ma trận trạng thái
 vector<unsigned char> in; // ma trận đầu vào
 vector<unsigned char> out; // ma trận đầu ra
-vector<unsigned char> Key;
+vector<unsigned char> Key; // ma trận Key được sắp xếp lại theo đúng ma trận
 vector<unsigned char> RoundKey; // lưu trữ các vòng khóa
-int Nb = 4;
+int Nb = 4; // số cột của block code, do mã hóa 128 bit nên ma trận 4x4, cần có thể nâng cấp lên 192 hoặc 256 bit sau
 int Nr = 10; // số vòng
-int Nk = 4; // số cọt của khóa gốc
+int Nk = 4; // số cột của khóa gốc
 int sz = 0;
-// char str[1024];
-string str;
+char key[100];
+string str; // chuỗi cần xử lý
+string path; // path đến file
+fstream f64; // luồng ghi mã hóa vào ảnh
+fstream if64; // luồng ghi thông điệp ra file để sử dụng sau
+
+void InputPath(){
+    cout << "Keo tha file vao day: ";
+    fflush(stdin);
+    getline(cin,path);
+    string s = "";
+    for (int i=0;i<path.size();i++){
+        s += path[i];
+        if (path[i] == (char)92) s+= (char)92;
+    }
+    path = s;
+    f64.open(path,ios::in|ios::out|ios::app);
+    if64.open("o64.ou",ios::app);
+}
 
 void InputStr(){
+    str = "";
     fflush(stdin);
-    // fgets(str,1024,stdin);
-    // gets(str);
     getline(cin,str);
 }
 
-void KeyNhapSan(){
-    Key[0]  = 0x6b;  Key[1]  = 0x6b;  Key[2]  = 0x6b;  Key[3]  = 0x6b;
-    Key[4]  = 0x65;  Key[5]  = 0x65;  Key[6]  = 0x65;  Key[7]  = 0x65;
-    Key[8]  = 0x79;  Key[9]  = 0x79;  Key[10] = 0x79;  Key[11] = 0x79;
-    Key[12] = 0x2e;  Key[13] = 0x2e;  Key[14] = 0x2e;  Key[15] = 0x2e;
-
-    // Key[0]  = 0x00;  Key[1]  = 0x00;  Key[2]  = 0x00;  Key[3]  = 0x00;
-    // Key[4]  = 0x00;  Key[5]  = 0x00;  Key[6]  = 0x00;  Key[7]  = 0x00;
-    // Key[8]  = 0x00;  Key[9]  = 0x00;  Key[10] = 0x00;  Key[11] = 0x00;
-    // Key[12] = 0x00;  Key[13] = 0x00;  Key[14] = 0x00;  Key[15] = 0x00;
-
-    // Key[0]  = 0x6b;  Key[1]  = 0x65;  Key[2]  = 0x79;  Key[3]  = 0x2e;
-    // Key[4]  = 0x6b;  Key[5]  = 0x65;  Key[6]  = 0x79;  Key[7]  = 0x2e;
-    // Key[8]  = 0x6b;  Key[9]  = 0x65;  Key[10] = 0x79;  Key[11] = 0x2e;
-    // Key[12] = 0x6b;  Key[13] = 0x65;  Key[14] = 0x79;  Key[15] = 0x2e;
-}
-
 void InputKey(){
-    char key[100];
     do {
         cout << "Nhap key: ";
         fflush(stdin);
@@ -90,6 +89,11 @@ void KeyExpansion(){
         RoundKey[i*4+3] = RoundKey[(i-Nk)*4+3] ^ temp[3];
         i++;
     }
+}
+
+void MakeKey(){
+    InputKey();
+    KeyExpansion();
 }
 
 void AddRoundKey(int round) {
@@ -250,8 +254,8 @@ void Cipher() {
 	        state[i*4+j] = in[i+4*j];
         }
     }
-
-cout << "state: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
+//dùng dòng dưới để debug khi deploy thì không cần
+//cout << "state: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
    // Add the First round key to the state before starting the rounds.
     AddRoundKey(0); 
    // There will be Nr rounds.The first Nr-1 rounds are identical.These Nr-1 rounds are executed in the loop below.
@@ -281,7 +285,8 @@ void Plain() {
 	 state[i*4+j] = in[i+4*j];
       }
    }
-cout << "state PL: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
+//dùng dòng dưới để debug khi deploy thì không cần
+//cout << "state PL: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cout << "\n";
    // Add the First round key to the state before starting the rounds.
    AddRoundKey(10); 
    // There will be Nr rounds. The first Nr-1 rounds are identical. These Nr-1 rounds are executed in the loop below.
@@ -304,18 +309,6 @@ cout << "state PL: "; for (int i =0;i<16;i++) cout << (int) state[i] << " "; cou
     }
 }
 
-// int fillBlock () {
-//    int j=0;
-//    while (sz < strlen(str)) {
-//       if (j >= Nb*4) break;
-//       in[j++] = str[sz];
-//       sz++;
-//    }
-//    // Pad the block with 0s, if necessary
-//    if (sz >= strlen(str)) for ( ; j < Nb*4 ; j++) in[j] = 0;
-//    return sz;   
-// }
-
 int fillBlock () {
    int j=0;
    while (sz < str.size()) {
@@ -335,3 +328,20 @@ void Initialize(){
     for (int i=0;i<16;i++) in.push_back(0);
     for (int i=0;i<16;i++) out.push_back(0);
 }
+
+// void KeyNhapSan(){
+//     Key[0]  = 0x6b;  Key[1]  = 0x6b;  Key[2]  = 0x6b;  Key[3]  = 0x6b;
+//     Key[4]  = 0x65;  Key[5]  = 0x65;  Key[6]  = 0x65;  Key[7]  = 0x65;
+//     Key[8]  = 0x79;  Key[9]  = 0x79;  Key[10] = 0x79;  Key[11] = 0x79;
+//     Key[12] = 0x2e;  Key[13] = 0x2e;  Key[14] = 0x2e;  Key[15] = 0x2e;
+
+//     // Key[0]  = 0x00;  Key[1]  = 0x00;  Key[2]  = 0x00;  Key[3]  = 0x00;
+//     // Key[4]  = 0x00;  Key[5]  = 0x00;  Key[6]  = 0x00;  Key[7]  = 0x00;
+//     // Key[8]  = 0x00;  Key[9]  = 0x00;  Key[10] = 0x00;  Key[11] = 0x00;
+//     // Key[12] = 0x00;  Key[13] = 0x00;  Key[14] = 0x00;  Key[15] = 0x00;
+
+//     // Key[0]  = 0x6b;  Key[1]  = 0x65;  Key[2]  = 0x79;  Key[3]  = 0x2e;
+//     // Key[4]  = 0x6b;  Key[5]  = 0x65;  Key[6]  = 0x79;  Key[7]  = 0x2e;
+//     // Key[8]  = 0x6b;  Key[9]  = 0x65;  Key[10] = 0x79;  Key[11] = 0x2e;
+//     // Key[12] = 0x6b;  Key[13] = 0x65;  Key[14] = 0x79;  Key[15] = 0x2e;
+// }
