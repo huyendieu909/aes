@@ -20,7 +20,6 @@ int main(){
                 cout << "======================Da ma hoa====================\n\n\n\n";
                 system("pause");
                 menu();
-                choice = 0;
                 break;
             case 2:
                 system("cls");
@@ -28,12 +27,10 @@ int main(){
                 cout << "\n=========================ok======================\n\n\n\n";
                 system("pause");
                 menu();
-                choice = 0;
                 break;
             case 3:
                 system("cls");
                 MakeKey();
-                choice = 0;
                 cout << "\n==================Da thay doi key=================\n\n\n\n";
                 system("pause");
                 menu();
@@ -43,12 +40,10 @@ int main(){
                 InputPath();
                 cout << "\n=================Da thay doi anh==================\n\n\n\n";
                 system("pause");
-                choice = 0;
                 break;
             case 5:
                 system("cls");
                 menu();
-                choice = 0;
                 break;
             case 6:
                 cout << "\nKet thuc chuong trinh\n";
@@ -56,7 +51,7 @@ int main(){
                 system("exit");
                 break;
         }
-    } while (choice <1 || choice > 7);
+    } while (choice != 6);
 }
 
 void menu(){
