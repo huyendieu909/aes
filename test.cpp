@@ -25,7 +25,7 @@ int main(){
             case 2:
                 system("cls");
                 plain();
-                cout << "\n=========================ok=====================\n\n\n\n";
+                cout << "\n=========================ok======================\n\n\n\n";
                 system("pause");
                 menu();
                 choice = 0;
