@@ -40,6 +40,7 @@ int main(){
                 InputPath();
                 cout << "\n=================Da thay doi anh==================\n\n\n\n";
                 system("pause");
+                menu();
                 break;
             case 5:
                 system("cls");
