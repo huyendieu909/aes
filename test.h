@@ -18,11 +18,13 @@ fstream f64; // luồng ghi mã hóa vào ảnh
 fstream if64; // luồng ghi thông điệp ra file để sử dụng sau
 
 void InputPath(){
+    if (f64.is_open()) f64.close();
     cout << "Keo tha file vao day: ";
     fflush(stdin);
     getline(cin,path);
     string s = "";
     for (int i=0;i<path.size();i++){
+        if (path[i] == (char)34) continue;
         s += path[i];
         if (path[i] == (char)92) s+= (char)92;
     }
