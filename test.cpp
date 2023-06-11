@@ -7,6 +7,7 @@ void plain();
 void menu();
 
 int main(){
+    system("chcp 65001");
     int choice = 0;
     Initialize();
     menu();
@@ -37,7 +38,7 @@ int main(){
                 break;
             case 4: 
                 system("cls");
-                InputPath();
+                InputPathToDecrypt();
                 cout << "\n=================Da thay doi anh==================\n\n\n\n";
                 system("pause");
                 menu();
@@ -74,7 +75,7 @@ void cypher(){
     if (path.size()<=1) InputPath();
     cout << "Nhap xau ki tu can ma hoa: ";
     InputStr();
-    sz = 0;
+    sz = 0; 
     while (sz < str.size()) {
         sz = fillBlock();
         Cipher();
@@ -92,7 +93,7 @@ void cypher(){
 }
 void plain(){
     if (strlen(key)==0) MakeKey();
-    if (path.size()<=1) InputPath();
+    if (path.size()<=1) InputPathToDecrypt();
     // dịch chuyển con trỏ file để tìm độ dài thông điệp
     int k,a,b,pos=0;
     f64.seekg(-1,ios::end); pos++;

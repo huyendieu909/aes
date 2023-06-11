@@ -19,7 +19,30 @@ fstream if64; // luồng ghi thông điệp ra file để sử dụng sau
 
 void InputPath(){
     if (f64.is_open()) f64.close();
-    cout << "Keo tha file vao day: ";
+    cout << "Keo tha file vao day (ten file va folder trong duong dan phai la ky tu khong dau): ";
+    fflush(stdin);
+    getline(cin,path);
+    string s = "";
+    for (int i=0;i<path.size();i++){
+        if (path[i] == (char)34) continue;
+        s += path[i];
+        if (path[i] == (char)92) s+= (char)92;
+    }
+    ifstream originPath(s,ios::binary);
+    s += "(Da ma hoa).jpg";
+    path = s;
+    ofstream copyPath(path,ios::binary);
+    istreambuf_iterator<char> begin_source(originPath);
+    istreambuf_iterator<char> end_source;
+    ostreambuf_iterator<char> begin_dest(copyPath);
+    copy(begin_source,end_source,begin_dest);
+    f64.open(path,ios::in|ios::out|ios::app|ios::binary);
+    if64.open("o64.ou",ios::app);
+}
+
+void InputPathToDecrypt(){
+    if (f64.is_open()) f64.close();
+    cout << "Keo tha file vao day (ten file va folder trong duong dan phai la ky tu khong dau): ";
     fflush(stdin);
     getline(cin,path);
     string s = "";
@@ -29,7 +52,7 @@ void InputPath(){
         if (path[i] == (char)92) s+= (char)92;
     }
     path = s;
-    f64.open(path,ios::in|ios::out|ios::app);
+    f64.open(path,ios::in|ios::out|ios::app|ios::binary);
     if64.open("o64.ou",ios::app);
 }
 
